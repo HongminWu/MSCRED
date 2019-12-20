@@ -3,13 +3,14 @@ import argparse
 import pandas as pd
 import os, sys
 import math
-import scipy
+import scipy,ipdb
 #import matplotlib.pyplot as plt
 from scipy.stats import pearsonr
 from scipy import spatial
 import itertools as it
 import string
 import re
+import ipdb
 
 parser = argparse.ArgumentParser(description = 'Signature Matrix Generator')
 parser.add_argument('--ts_type', type = str, default = "node",
@@ -154,7 +155,7 @@ def link_data_cleaning():
 		pivot_data = joined_df.pivot(index='sd_concat', columns='agg_time_interval', values=value_col)
 		output_df = pd.DataFrame(unique_link_name_concat, columns=['sd_concat']).merge(pivot_data.reset_index(),
 							on='sd_concat', how='left')
-		output_df.to_csv("/home/zhaos/ts_data_csv2/channel_"+value_col+".csv", header=True, index=False)
+		output_df.to_csv("/home/hongminwu/anomaly_detection/MSCRED/log/ts_data_csv2/channel_"+value_col+".csv", header=True, index=False)
 
 
 
@@ -167,7 +168,7 @@ def generate_signature_matrix_link():
 	sum(vector(a->b) * vectro(z->a) + vector(a->b) * vectro(y->a) + ...)/count(z,y,...->a)
 	'''
 	for value_col in value_colnames:
-		data = pd.read_csv("/home/zhaos/ts_data_csv2/channel_"+value_col+".csv")
+		data = pd.read_csv("/home/hongminwu/anomaly_detection/MSCRED/log/ts_data_csv2/channel_"+value_col+".csv")
 		link_name_concat = data.iloc[:,1].values
 		data = data.iloc[:,1:].values
 		
@@ -200,7 +201,7 @@ def generate_signature_matrix_link():
 				# if t == 70:
 				# 	print matrix_all[6][0]
 				
-			path_temp = "/home/zhaos/ts_data_csv2/signature_matrix/matrix_win_" + str(win) + str(value_col)
+			path_temp = "/home/hongminwu/anomaly_detection/MSCRED/log/ts_data_csv2/signature_matrix/matrix_win_" + str(win) + str(value_col)
 			#print np.shape(matrix_all[0])
 			
 			np.save(path_temp, matrix_all)
@@ -214,7 +215,7 @@ def generate_signature_matrix_link():
 def generate_train_test_data():
 	#data sample generation
 	print ("generating train/test data samples...")
-	matrix_data_path = "/home/zhaos/ts_data_csv2/signature_matrix/"
+	matrix_data_path = "/home/hongminwu/anomaly_detection/MSCRED/log/ts_data_csv2/signature_matrix/"
 
 	train_data_path = matrix_data_path + "train_data/"
 	if not os.path.exists(train_data_path):
@@ -226,7 +227,8 @@ def generate_train_test_data():
 	data_all = []
 	for value_col in value_colnames:
 		for w in range(len(win_size)):
-			path_temp = matrix_data_path + "matrix_win_" + str(win_size[w]) + str(value_col) + ".npy"
+			# path_temp = matrix_data_path + "matrix_win_" + str(win_size[w]) + str(value_col) + ".npy"
+			path_temp = matrix_data_path + "matrix_win_" + str(win_size[w]) + ".npy"            
 			data_all.append(np.load(path_temp))
 
 	train_test_time = [[train_start, train_end], [test_start, test_end]]
@@ -266,3 +268,4 @@ if __name__ == '__main__':
 		generate_signature_matrix_link()
 
 	generate_train_test_data()
+	pass

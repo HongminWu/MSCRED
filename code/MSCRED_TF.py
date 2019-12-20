@@ -5,12 +5,14 @@ import pandas as pd
 import os, sys
 import timeit
 import math
+import ipdb
+
 os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"
 
 parser = argparse.ArgumentParser(description = 'MSCRED encoder-decoder')
 parser.add_argument('--batch', type = int, default = 1,
 				   help = 'batch_size for data input') #current version supprts batch_size = 1
-parser.add_argument('--sensor_n', type = int, default = 26,
+parser.add_argument('--sensor_n', type = int, default = 30,
 				   help = 'number of sensors')
 parser.add_argument('--win_size', type = int, default = [10, 30, 60],
 				   help = 'window size of each segment')
@@ -30,11 +32,11 @@ parser.add_argument('--test_end_id',  type = int, default = 2000,
 						help = 'test end id')
 parser.add_argument('--save_model_step', type = int, default = 1,
 						help = 'number of iterations to save model')
-parser.add_argument('--model_path', type = str, default = '/home/zhaos/ts_data_csv2/MSCRED/',
+parser.add_argument('--model_path', type = str, default = '/home/hongminwu/anomaly_detection/MSCRED/log/ts_data_csv2/MSCRED/',
 				   help='path to save models')
-parser.add_argument('--raw_data_path', type = str, default = '/home/zhaos/ts_data_csv2/ts_model_input.csv',
+parser.add_argument('--raw_data_path', type = str, default = '/home/hongminwu/anomaly_detection/MSCRED/log/ts_data_csv2/ts_model_input.csv',
 				   help='path to load raw data')
-parser.add_argument('--matrix_data_path', type = str, default = '/home/zhaos/ts_data_csv2/signature_matrix/',
+parser.add_argument('--matrix_data_path', type = str, default = '/home/hongminwu/anomaly_detection/MSCRED/log/ts_data_csv2/signature_matrix/',
 				   help='matrix data path')
 # parser.add_argument('--test_input_path', type = str, default = '../data/matrix_data/test_data/',
 # 				   help='test input data path')
@@ -45,7 +47,6 @@ parser.add_argument('--GPU_id', type=int, default = 3,
 
 args = parser.parse_args()
 print(args)
-
 # argument settings
 batch_size = args.batch
 learning_rate =args.learning_rate
@@ -70,7 +71,7 @@ train_test_label = args.train_test_label
 
 value_colnames = ['total_count','error_count','error_rate']
 scale_n = len(win_size) * len(value_colnames)
-sensor_n = np.unique(np.array(pd.read_csv(raw_data_path).iloc[:,:2])).shape[0]
+# sensor_n = np.unique(np.array(pd.read_csv(raw_data_path).iloc[:,:2])).shape[0]
 # set GPU
 #GPU_id = args.GPU_id
 #os.environ['CUDA_VISIBLE_DEVICES'] = str(GPU_id)
@@ -361,10 +362,12 @@ saver = tf.train.Saver(max_to_keep = 10)
 starting_iter = 50
 if train_test_label == 1: # model training
 	with tf.Session(config=tf.ConfigProto(inter_op_parallelism_threads=80, intra_op_parallelism_threads=80)) as sess:
+		sess.run(tf.global_variables_initializer())
 		if starting_iter == 0:
 			sess.run(init)
 		else:
-			saver.restore(sess, model_path + str(starting_iter-1) + ".ckpt")
+			# saver.restore(sess, model_path + str(starting_iter-1) + ".ckpt")
+			pass
 		start = timeit.default_timer()
 		for idx in range(starting_iter, starting_iter+training_iters):
 			print ("training iteration " + str(idx) + "...")
@@ -395,8 +398,9 @@ if train_test_label == 0: # model test
 	#learning_curve = open("../data/learning_curve.csv", "w")
 
 	with tf.Session(config=tf.ConfigProto(inter_op_parallelism_threads=20, intra_op_parallelism_threads=20)) as sess:
+		sess.run(tf.global_variables_initializer())        
 		restore_idx = 4 # setting restore_idx of learned model
-		saver.restore(sess, model_path + str(restore_idx) + ".ckpt")
+		# saver.restore(sess, model_path + str(restore_idx) + ".ckpt")
 
 		reconstructed_data_path = matrix_data_path + "reconstructed_data/"
 		if not os.path.exists(reconstructed_data_path):

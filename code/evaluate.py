@@ -21,7 +21,7 @@ parser.add_argument('--test_end_point',  type = int, default = 20000,
 						help = 'test end point')
 parser.add_argument('--gap_time', type = int, default = 10,
 				   help = 'gap time between each segment')
-parser.add_argument('--matrix_data_path', type = str, default = '../data/matrix_data/',
+parser.add_argument('--matrix_data_path', type = str, default = '../log/ts_data_csv2/signature_matrix/',
 				   help='matrix data path')
 
 args = parser.parse_args()

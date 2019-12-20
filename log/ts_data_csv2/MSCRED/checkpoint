@@ -1,0 +1,6 @@
+model_checkpoint_path: "/home/hongminwu/anomaly_detection/MSCRED/log/ts_data_csv2/MSCRED/54.ckpt"
+all_model_checkpoint_paths: "/home/hongminwu/anomaly_detection/MSCRED/log/ts_data_csv2/MSCRED/50.ckpt"
+all_model_checkpoint_paths: "/home/hongminwu/anomaly_detection/MSCRED/log/ts_data_csv2/MSCRED/51.ckpt"
+all_model_checkpoint_paths: "/home/hongminwu/anomaly_detection/MSCRED/log/ts_data_csv2/MSCRED/52.ckpt"
+all_model_checkpoint_paths: "/home/hongminwu/anomaly_detection/MSCRED/log/ts_data_csv2/MSCRED/53.ckpt"
+all_model_checkpoint_paths: "/home/hongminwu/anomaly_detection/MSCRED/log/ts_data_csv2/MSCRED/54.ckpt"
